@@ -98,7 +98,6 @@ def logout():
     return redirect(get_post_logout_redirect())
 
 
-@anonymous_user_required
 def register():
     """View function which handles a registration request."""
 
