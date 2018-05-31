@@ -1,16 +1,17 @@
 Quick Start
 ===========
 
--  `Basic SQLAlchemy Application <#basic-sqlalchemy-application>`_
--  `Basic SQLAlchemy Application with session
-   <#basic-sqlalchemy-application-with-session>`_
--  `Basic MongoEngine Application <#basic-mongoengine-application>`_
--  `Basic Peewee Application <#basic-peewee-application>`_
--  `Mail Configuration <#mail-configuration>`_
--  `Proxy Configuration <#proxy-configuration>`_
+* :ref:`basic-sqlalchemy-application`
+* :ref:`basic-sqlalchemy-application-with-session`
+* :ref:`basic-mongoengine-application`
+* :ref:`basic-peewee-application`
+* :ref:`mail-configuration`
+* :ref:`proxy-configuration`
+
+.. _basic-sqlalchemy-application:
 
 Basic SQLAlchemy Application
-=============================
+============================
 
 SQLAlchemy Install requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,6 +83,8 @@ possible using SQLAlchemy:
     if __name__ == '__main__':
         app.run()
 
+.. _basic-sqlalchemy-application-with-session:
+
 Basic SQLAlchemy Application with session
 =========================================
 
@@ -106,12 +109,10 @@ possible using `SQLAlchemy in a declarative way
 We are gonna split the application at least in three files: app.py, database.py
 and models.py. You can also do the models a folder and spread your tables there.
 
-- app.py
+- app.py ::
 
-::
-
-    from flask import Flask
-    from flask_security import Security, login_required, \
+    from flask import Flask, render_template_string
+    from flask_security import Security, current_user, login_required, \
          SQLAlchemySessionUserDatastore
     from database import db_session, init_db
     from models import User, Role
@@ -120,6 +121,8 @@ and models.py. You can also do the models a folder and spread your tables there.
     app = Flask(__name__)
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = 'super-secret'
+    # Bcrypt is set as default SECURITY_PASSWORD_HASH, which requires a salt
+    app.config['SECURITY_PASSWORD_SALT'] = 'super-secret-random-salt'
 
     # Setup Flask-Security
     user_datastore = SQLAlchemySessionUserDatastore(db_session,
@@ -137,14 +140,12 @@ and models.py. You can also do the models a folder and spread your tables there.
     @app.route('/')
     @login_required
     def home():
-        return render('Here you go!')
+        return render_template_string('Hello {{email}} !', email=current_user.email)
 
     if __name__ == '__main__':
         app.run()
 
-- database.py
-
-::
+- database.py ::
 
     from sqlalchemy import create_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
@@ -165,9 +166,7 @@ and models.py. You can also do the models a folder and spread your tables there.
         import models
         Base.metadata.create_all(bind=engine)
 
-- models.py
-
-::
+- models.py ::
 
     from database import Base
     from flask_security import UserMixin, RoleMixin
@@ -204,8 +203,10 @@ and models.py. You can also do the models a folder and spread your tables there.
         roles = relationship('Role', secondary='roles_users',
                              backref=backref('users', lazy='dynamic'))
 
+.. _basic-mongoengine-application:
+
 Basic MongoEngine Application
-==============================
+=============================
 
 MongoEngine Install requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -270,6 +271,8 @@ possible using MongoEngine:
     if __name__ == '__main__':
         app.run()
 
+
+.. _basic-peewee-application:
 
 Basic Peewee Application
 ========================
@@ -349,8 +352,10 @@ possible using Peewee:
         app.run()
 
 
+.. _mail-configuration:
+
 Mail Configuration
-===================
+==================
 
 Flask-Security integrates with Flask-Mail to handle all email
 communications between user and site, so it's important to configure
@@ -374,6 +379,8 @@ the basic application code in the previous section::
 To learn more about the various Flask-Mail settings to configure it to
 work with your particular email server configuration, please see the
 `Flask-Mail documentation <http://packages.python.org/Flask-Mail/>`_.
+
+.. _proxy-configuration:
 
 Proxy Configuration
 ===================

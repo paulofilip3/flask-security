@@ -110,6 +110,14 @@ def app(request):
     def post_register():
         return render_template('index.html', content='Post Register')
 
+    @app.route('/post_confirm')
+    def post_confirm():
+        return render_template('index.html', content='Post Confirm')
+
+    @app.route('/post_reset')
+    def post_reset():
+        return render_template('index.html', content='Post Reset')
+
     @app.route('/admin')
     @roles_required('admin')
     def admin():
@@ -212,7 +220,10 @@ def sqlalchemy_datastore(request, app, tmpdir):
     with app.app_context():
         db.create_all()
 
-    request.addfinalizer(lambda: os.remove(path))
+    def tear_down():
+        os.close(f)
+        os.remove(path)
+    request.addfinalizer(tear_down)
 
     return SQLAlchemyUserDatastore(db, User, Role)
 
@@ -270,7 +281,11 @@ def sqlalchemy_session_datastore(request, app, tmpdir):
     with app.app_context():
         Base.metadata.create_all(bind=engine)
 
-    request.addfinalizer(lambda: os.remove(path))
+    def tear_down():
+        db_session.close()
+        os.close(f)
+        os.remove(path)
+    request.addfinalizer(tear_down)
 
     return SQLAlchemySessionUserDatastore(db_session, User, Role)
 
@@ -319,7 +334,12 @@ def peewee_datastore(request, app, tmpdir):
         for Model in (Role, User, UserRoles):
             Model.create_table()
 
-    request.addfinalizer(lambda: os.remove(path))
+    def tear_down():
+        db.close_db(None)
+        os.close(f)
+        os.remove(path)
+
+    request.addfinalizer(tear_down)
 
     return PeeweeUserDatastore(db, User, Role, UserRoles)
 

@@ -21,7 +21,7 @@ Core
 ``SECURITY_URL_PREFIX``                  Specifies the URL prefix for the
                                          Flask-Security blueprint. Defaults to
                                          ``None``.
-``SECURITY_SUBDOMAIN``                   Specifies the subdomain for the 
+``SECURITY_SUBDOMAIN``                   Specifies the subdomain for the
                                          Flask-Security blueprint. Defaults to
                                          ``None``.
 ``SECURITY_FLASH_MESSAGES``              Specifies whether or not to flash
@@ -30,6 +30,10 @@ Core
 ``SECURITY_I18N_DOMAIN``                 Specifies the name for domain
                                          used for translations.
                                          Defaults to ``flask_security``.
+``SECURITY_I18N_DIRNAME``                Specifies the directory containing the
+                                         ``MO`` files used for translations.
+                                         Defaults to
+                                         ``[PATH_LIB]/flask_security/translations``.
 ``SECURITY_PASSWORD_HASH``               Specifies the password hash algorithm to
                                          use when hashing passwords. Recommended
                                          values for production systems are
@@ -46,6 +50,11 @@ Core
                                          ``SECURITY_PASSWORD_SALT``, and then
                                          with a random salt. May be useful for
                                          integrating with other applications.
+                                         It can also be a set of scheme that
+                                         should not be hashed twice.
+                                         Default to a list of known schemes
+                                         not working with double hashing
+                                         (`django_{digest}`, `plaintext`).
                                          Defaults to ``False``.
 ``SECURITY_HASHING_SCHEMES``             List of algorithms used for
                                          creating and validating tokens.
